@@ -1,3 +1,6 @@
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -5,22 +8,22 @@ import java.util.Scanner;
 
 public class Solution {
   public static void main(String[] args) {
-    ArrayList<Integer> innerList1 = new ArrayList<>();
-    ArrayList<Integer> innerList2 = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> seqList = new ArrayList<>(Arrays.asList(innerList1, innerList2));
+    N_And_Q_Count n_and_q_count = IoHelper.get_N_And_Q_Count();
+    Q_Input[] q_inputs = IoHelper.get_Q_Input(n_and_q_count.qCount);
 
-    LastAns_SeqList_Pair pair = SeqListReferentiallyTransparentFn.applyQuery1(0, seqList, 1, 2, seqList.size());
+    SeqList seqList = new SeqList(n_and_q_count.n);
 
-    System.out.println(pair);
-//    N_And_Q_Count n_and_q_count = IoHelper.get_N_And_Q_Count();
-//    Q_Input[] q_inputs = IoHelper.get_Q_Input(n_and_q_count.qCount);
-//
-//    SeqList seqList = new SeqList();
-//
-//    for (Q_Input q_input: q_inputs) {
-//      Optional<Integer> queryResult = seqList.applyQuery(q_input);
-//      queryResult.ifPresent(System.out::println);
-//    }
+    for (Q_Input q_input: q_inputs) {
+      switch (q_input.type) {
+        case QUERY_1:
+          seqList.applyQuery1(q_input.x, q_input.y);
+          break;
+        case QUERY_2:
+          int lastAns = seqList.applyQuery2(q_input.x, q_input.y);
+          System.out.println(lastAns);
+          break;
+      }
+    }
   }
 }
 
@@ -37,23 +40,23 @@ class N_And_Q_Count {
 
 class Q_Input {
   // non-testable
-  public Q_Input(int type, int x, int y) {
+  public Q_Input(QueryType type, int x, int y) {
     this.type = type;
     this.x = x;
     this.y = y;
   }
 
-  public int type;
+  public static enum QueryType { QUERY_1, QUERY_2 };
+  public QueryType type;
   public int x;
   public int y;
 }
 
 class SeqList {
-  // TODO: testable?
-  public Optional<Integer> applyQuery(Q_Input queryInput) {
-    return Optional.empty();
+  public SeqList(int n) {
+    this.seqList = SeqListReferentiallyTransparentFn.initSeqList(n);
+    this.lastAns = 0;
   }
-
   // TODO: testable?
   public void applyQuery1(int x, int y) {
     LastAns_SeqList_Pair pair = SeqListReferentiallyTransparentFn.applyQuery1(lastAns, seqList, x, y, seqList.size());
@@ -73,15 +76,28 @@ class SeqList {
 
 class SeqListReferentiallyTransparentFn {
   // TODO: test
+  public static ArrayList<ArrayList<Integer>> initSeqList(int n) {
+    ArrayList<ArrayList<Integer>> seqList = new ArrayList<>();
+    for (int i = 0; i < n; ++i) {
+      seqList.add(new ArrayList<>());
+    }
+
+    return seqList;
+  }
+  // has test
   public static LastAns_SeqList_Pair applyQuery1(int lastAns, ArrayList<ArrayList<Integer>> seqList, int x, int y, int n) {
+    if (n == 0) throw new IllegalArgumentException("n == 0");
+
     int index = findSubListIndex(lastAns, x, n);
     ArrayList<Integer> innerList = seqList.get(index);
     innerList.add(y); // TODO: do not modify existing list
     return new LastAns_SeqList_Pair(lastAns, seqList);
   }
 
-  // TODO: test
+  // has test
   public static int applyQuery2(int lastAns, ArrayList<ArrayList<Integer>> seqList, int x, int y, int n) {
+    if (n == 0) throw new IllegalArgumentException("n == 0");
+
     int seqListIndex = findSubListIndex(lastAns, x, n);
     ArrayList<Integer> seq = seqList.get(seqListIndex);
     return seq.get(y % seq.size());
@@ -89,6 +105,8 @@ class SeqListReferentiallyTransparentFn {
 
   // has test
   public static int findSubListIndex(int lastAns, int x, int n) {
+    if (n == 0) throw new IllegalArgumentException("n == 0");
+
     return ((x ^ lastAns) % n);
   }
 }
@@ -125,6 +143,8 @@ class IoHelper {
 
   // has test
   public static N_And_Q_Count parse_N_And_Q_Count(String input) {
+    if (input == null) throw new IllegalArgumentException("input == null");
+
     String[] splitBySpace = input.split(" ");
     int n = Integer.parseInt(splitBySpace[0]);
     int qCount = Integer.parseInt(splitBySpace[1]);
@@ -144,10 +164,24 @@ class IoHelper {
 
   // has test
   public static Q_Input parse_Q_Input(String input) {
+    if (input == null) throw new IllegalArgumentException("input == null");
+
     String[] splitBySpace = input.split(" ");
-    int type = Integer.parseInt(splitBySpace[0]);
+    Q_Input.QueryType type = fromInt(Integer.parseInt(splitBySpace[0]));
     int x = Integer.parseInt(splitBySpace[1]);
     int y = Integer.parseInt(splitBySpace[2]);
     return new Q_Input(type, x, y);
+  }
+
+  // TODO: test
+  public static Q_Input.QueryType fromInt(int type) {
+    switch (type) {
+      case 1:
+        return Q_Input.QueryType.QUERY_1;
+      case 2:
+        return Q_Input.QueryType.QUERY_2;
+      default:
+        throw new IllegalArgumentException("type must be '1' or '2'");
+    }
   }
 }

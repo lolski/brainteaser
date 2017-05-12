@@ -74,10 +74,10 @@ public class SolutionTest extends TestCase {
 
   public void testSeqListReferentiallyTransparentApplyQuery2() {
     // initialization
-    ArrayList<Integer> subList1 = new ArrayList<>();
-    ArrayList<Integer> subList2 = new ArrayList<>();
-    ArrayList<Integer> subList3 = new ArrayList<>();
-    ArrayList<Integer> subList4 = new ArrayList<>();
+    ArrayList<Integer> subList1 = new ArrayList<>(Arrays.asList(1));
+    ArrayList<Integer> subList2 = new ArrayList<>(Arrays.asList(2));
+    ArrayList<Integer> subList3 = new ArrayList<>(Arrays.asList(3));
+    ArrayList<Integer> subList4 = new ArrayList<>(Arrays.asList(4));
     ArrayList<ArrayList<Integer>> seqList = new ArrayList<>(Arrays.asList(subList1, subList2, subList3, subList4));
 
     // input
