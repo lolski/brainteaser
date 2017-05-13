@@ -67,7 +67,11 @@ class SeqList {
 
   // TODO: testable?
   public int applyQuery2(int x, int y) {
-    return SeqListReferentiallyTransparentFn.applyQuery2(lastAns, seqList, x, y, seqList.size());
+    int newLastAns = SeqListReferentiallyTransparentFn.applyQuery2(lastAns, seqList, x, y, seqList.size());
+
+    lastAns = newLastAns;
+
+    return lastAns;
   }
 
   private ArrayList<ArrayList<Integer>> seqList;
@@ -84,6 +88,7 @@ class SeqListReferentiallyTransparentFn {
 
     return seqList;
   }
+
   // has test
   public static LastAns_SeqList_Pair applyQuery1(int lastAns, ArrayList<ArrayList<Integer>> seqList, int x, int y, int n) {
     if (n == 0) throw new IllegalArgumentException("n == 0");
