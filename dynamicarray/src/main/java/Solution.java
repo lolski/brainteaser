@@ -1,9 +1,4 @@
-import com.sun.javaws.exceptions.InvalidArgumentException;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.Scanner;
 
 public class Solution {
